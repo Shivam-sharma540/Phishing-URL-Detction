@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing URL Detector</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <img alt="The Thousand Sunny boat of Luffy from One Piece anime" class="background-image" src="{{ url_for('static', filename='sunny.jpg') }}"/>
+
+    <header class="header">
+        <img src="{{ url_for('static', filename='pngwing.com.png') }}" alt="Zoro from One Piece anime" class="logo">
+        <nav class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Login</a>
+            <a href="#">Register</a>
+        </nav>
+        <img src="{{ url_for('static', filename='pngwing.com.png') }}" alt="Zoro from One Piece anime" class="logo">
+    </header>
+
+    <div class="detector-container">
+        <h1>Phishing URL Detector</h1>
+        <p>Check if a URL is safe or a phishing attempt!</p>
+        <div class="input-container">
+            <form method="POST" action="/check" class="input-container">
+                <input type="text" name="url" placeholder="Enter URL here..." value="{{ checked_url if checked_url else '' }}" required>
+                <button type="submit">Check URL</button>
+            </form>
+        </div>
+        {% if result %}
+        <div class="result-message {% if 'Safe' in result %}result-safe{% else %}result-phishing{% endif %}">
+            {{ result }}
+        </div>
+        {% endif %}
+        <p class="footer">&copy; 2025 Phishing URL Detector. All rights reserved.</p>
+    </div>
+
+    <button onclick="toggleSlideBar()" class="toggle-btn">
+        <i class="fas fa-history"></i> Recently Checked
+    </button>
+
+    <div id="slideBar" class="slide-bar slide-bar-hidden">
+        <div class="flex justify-between items-center mb-4">
+            <h2>Recently Checked URLs</h2>
+            <button onclick="clearHistory()" class="clear-btn">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+        <ul>
+            {% for item in recent_urls %}
+            <li onclick="fillUrlInput('{{ item.url }}')">
+                <div class="url-text">{{ item.url }}</div>
+                <div class="url-meta">
+                    <span class="url-result {% if 'Safe' in item.result %}text-green-400{% else %}text-red-400{% endif %}">
+                        {{ item.result }}
+                    </span>
+                    <span class="url-time">{{ item.timestamp }}</span>
+                </div>
+            </li>
+            {% else %}
+            <li class="no-history">No URLs checked yet</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
